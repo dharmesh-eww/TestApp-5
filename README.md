@@ -30,13 +30,14 @@ lib/
 - SQLite local persistence with a v1-to-v2 migration.
 - Public manifest refresh with same-host paths, file-size bounds, SHA-256 checks, schema validation and transactional cache activation.
 - Lunar event provenance validation and device-local event display; no approximate client-side moon calculations.
-- Optional local daily notification with device timezone resolution.
+- Optional local daily and weekly notifications, plus per-event lunar reminders with device timezone resolution.
+- Locally configurable reading categories and an opt-in weekly activity recap.
 - Versioned JSON backup export and validated import with merge/replace preview.
 - Fixed light appearance; no login, backend, Firebase or cloud sync.
 
 ## Content publishing contract
 
-Configure a public manifest URL in Settings. Every manifest file entry must provide `path`, `size_bytes` and a real 64-character SHA-256 digest. Daily packs must use schema version 1 and contain published readings for all twelve signs. Lunar packs must include UTC timestamps, source name, source timezone, dataset version, verification date and source URL. Placeholder hashes are rejected.
+Configure a public `raw.githubusercontent.com` HTTPS manifest URL in Settings. Every manifest file entry must provide `path`, `size_bytes` and a real 64-character SHA-256 digest. Daily packs must use schema version 1 and contain published readings for all twelve signs. Lunar packs must include UTC timestamps, source name, source timezone, dataset version, verification date and source URL. Placeholder hashes are rejected.
 
 ## Run and validate
 
@@ -50,10 +51,10 @@ flutter build apk --release
 ## Release gates still required
 
 - Publish reviewed weekly/monthly and historical packs; only daily general content is bundled.
-- Complete weekly, lunar, weekday and quiet-hours reminder scheduling, including rescheduling after reboot and timezone changes.
-- Add configurable category preferences, optional non-punitive streaks and weekly reflection recap.
+- Add quiet hours, multiple weekday selection, favorite-sign reminders, snooze/disable-all controls and robust rescheduling after timezone changes.
+- Add optional non-punitive reading streaks and richer weekly reflection summaries.
 - Expand sourced learning articles and add content correction/contact information.
-- Add ETag/304 handling, archive retention policy and a verified cache rollback recovery path.
+- Add ETag/304 handling, archive retention policy, withdrawn-content UX and a verified cache rollback recovery path.
 - Test backup restore rollback, database migration and Android notification permission behavior on CI.
 - Complete privacy policy, terms, attribution and Play Store data-safety declarations before release.
 
