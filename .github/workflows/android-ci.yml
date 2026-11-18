@@ -1,0 +1,80 @@
+name: AstroDaily - Flutter Android CI
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: astrodaily-android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  android:
+    name: Generate, test and build Android APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Generate Android-only Flutter project
+        shell: bash
+        run: |
+          if [ ! -f pubspec.yaml ]; then
+            flutter create --platforms=android --project-name astrodaily .
+          else
+            echo "Flutter project already exists; skipping project generation."
+          fi
+
+      - name: Commit generated Flutter scaffold
+        shell: bash
+        run: |
+          git add -A
+          if ! git diff --cached --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "chore: bootstrap AstroDaily Flutter Android project"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          else
+            echo "No generated project changes to commit."
+          fi
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze Flutter project
+        run: flutter analyze
+
+      - name: Run Flutter tests
+        run: flutter test
+
+      - name: Build release APK
+        run: flutter build apk --release
+
+      - name: Upload release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: astrodaily-android-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+          retention-days: 14
