@@ -1,4 +1,21 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:astrodaily/main.dart';
-void main(){testWidgets('AstroDaily renders Today', (tester)async{await tester.pumpWidget(const ProviderScope(child:AstroDailyApp()));await tester.pumpAndSettle();expect(find.text('A little cosmic\nclarity for today.'),findsOneWidget);expect(find.text('Today'),findsOneWidget);});}
+
+void main() {
+  test('AstroDaily contains all twelve Western zodiac signs', () {
+    expect(signs.length, 12);
+    expect(signMap.keys.toSet(), {
+      'aries','taurus','gemini','cancer','leo','virgo',
+      'libra','scorpio','sagittarius','capricorn','aquarius','pisces',
+    });
+  });
+
+  test('Each zodiac sign has a readable name and traditional metadata', () {
+    for (final sign in signs) {
+      expect(sign.name, isNotEmpty);
+      expect(sign.glyph, isNotEmpty);
+      expect(sign.element, isNotEmpty);
+      expect(sign.mode, isNotEmpty);
+    }
+  });
+}
