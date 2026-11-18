@@ -1,0 +1,2 @@
+import 'package:flutter/material.dart';import 'package:share_plus/share_plus.dart';import '../models/reading.dart';import '../models/zodiac_sign.dart';
+class ShareCardService{static Future<void> shareReading(BuildContext context,HoroscopeReading r,ZodiacSign s)async{final text=s.name+' · '+r.periodStart+'\n'+r.title+'\n'+r.body+'\n\nAstrology is for entertainment and self-reflection, not factual prediction or professional advice.';await SharePlus.instance.share(ShareParams(text:text,subject:'AstroDaily · '+s.name));}}
