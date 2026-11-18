@@ -33,8 +33,8 @@ Future<void> setSign(String s)async{await (await db).update('profile',{'sign':s}
 Future<List<Map<String,Object?>>> saved()async=>(await db).query('saved');
 Future<List<Map<String,Object?>>> journal()async=>(await db).query('journal',orderBy:'day DESC');
 Future<void> toggle(Reading r)async{final d=await db;final old=await d.query('saved',where:'id=?',whereArgs:[r.id]);if(old.isNotEmpty){await d.delete('saved',where:'id=?',whereArgs:[r.id]);}else{await d.insert('saved',{'id':r.id,'sign':r.sign,'title':r.title,'body':r.body,'prompt':r.prompt});}}
-Future<void> write(String body,String prompt)async=>(await db).insert('journal',{'id':DateTime.now().microsecondsSinceEpoch.toString(),'day':DateFormat('yyyy-MM-dd').format(DateTime.now()),'body':body,'prompt':prompt});
-Future<void> delete(String id)async=>(await db).delete('journal',where:'id=?',whereArgs:[id]);
+Future<void> write(String body,String prompt)async{await (await db).insert('journal',{'id':DateTime.now().microsecondsSinceEpoch.toString(),'day':DateFormat('yyyy-MM-dd').format(DateTime.now()),'body':body,'prompt':prompt});}
+Future<void> delete(String id)async{await (await db).delete('journal',where:'id=?',whereArgs:[id]);}
 Future<String?> getSetting(String k)async{final r=await(await db).query('settings',where:'key=?',whereArgs:[k]);return r.isEmpty?null:r.first['value'] as String;}
 Future<void> setting(String k,String v)async{await (await db).insert('settings',{'key':k,'value':v},conflictAlgorithm:ConflictAlgorithm.replace);}
 Future<void> clear()async{final d=await db;await d.delete('saved');await d.delete('journal');await d.delete('settings');await d.update('profile',{'sign':'aries'},where:'id=1');}}
