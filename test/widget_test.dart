@@ -1,21 +1,24 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:astrodaily/main.dart';
+import 'package:astrodaily/core/models/zodiac_sign.dart';
 
 void main() {
   test('AstroDaily contains all twelve Western zodiac signs', () {
-    expect(signs.length, 12);
-    expect(signMap.keys.toSet(), {
+    expect(zodiacSigns.length, 12);
+    expect(zodiacById.keys.toSet(), {
       'aries','taurus','gemini','cancer','leo','virgo',
       'libra','scorpio','sagittarius','capricorn','aquarius','pisces',
     });
   });
-
-  test('Each zodiac sign has a readable name and traditional metadata', () {
-    for (final sign in signs) {
+  test('Every sign exposes traditional profile metadata', () {
+    for (final sign in zodiacSigns) {
       expect(sign.name, isNotEmpty);
       expect(sign.glyph, isNotEmpty);
       expect(sign.element, isNotEmpty);
-      expect(sign.mode, isNotEmpty);
+      expect(sign.modality, isNotEmpty);
+      expect(sign.ruler, isNotEmpty);
     }
+  });
+  test('Zodiac IDs are unique', () {
+    expect(zodiacSigns.map((s) => s.id).toSet().length, 12);
   });
 }
