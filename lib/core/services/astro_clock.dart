@@ -4,9 +4,9 @@ import 'package:timezone/timezone.dart' as tz;
 /// Horoscope dates follow the documented US editorial calendar, not UTC midnight
 /// and not the device timezone.
 class AstroClock {
-  static DateTime editorialToday([String zone = 'America/New_York']) {
+  static String _safeZone(String value) {\n    try { tz.getLocation(value); return value; } catch (_) { return 'America/New_York'; }\n  }\n  static DateTime editorialToday([String zone = 'America/New_York']) {
     tzdata.initializeTimeZones();
-    final location = tz.getLocation(zone);
+    final location = tz.getLocation(_safeZone(zone));
     final now = tz.TZDateTime.now(location);
     return DateTime(now.year, now.month, now.day);
   }
