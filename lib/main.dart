@@ -29,14 +29,14 @@ final byId={for(final s in signs)s.id:s};
 class Reading{const Reading(this.id,this.sign,this.title,this.body,this.prompt,this.date);final String id,sign,title,body,prompt,date;factory Reading.fromJson(Map<String,dynamic> j)=>Reading(j['id'],j['sign_id'],j['title'],j['body'],j['prompt'],j['date']??'2026-11-18');}
 class LocalDb{LocalDb._();static final instance=LocalDb._();Database? _db;Future<Database> get db async{if(_db!=null)return _db!;final dir=await getDatabasesPath();_db=await openDatabase(p.join(dir,'astrodaily.db'),version:1,onCreate:(d,v)async{await d.execute('CREATE TABLE profile(id INTEGER PRIMARY KEY, sign TEXT)');await d.execute('CREATE TABLE saved(id TEXT PRIMARY KEY, sign TEXT, title TEXT, body TEXT, prompt TEXT)');await d.execute('CREATE TABLE journal(id TEXT PRIMARY KEY, day TEXT, body TEXT, prompt TEXT)');await d.execute('CREATE TABLE settings(key TEXT PRIMARY KEY,value TEXT)');await d.insert('profile',{'id':1,'sign':'aries'});});return _db!;}
 Future<String> sign()async=>(await db).query('profile').then((r)=>r.first['sign'] as String);
-Future<void> setSign(String s)async=>(await db).update('profile',{'sign':s},where:'id=1');
+Future<void> setSign(String s)async{await (await db).update('profile',{'sign':s},where:'id=1');}
 Future<List<Map<String,Object?>>> saved()async=>(await db).query('saved');
 Future<List<Map<String,Object?>>> journal()async=>(await db).query('journal',orderBy:'day DESC');
 Future<void> toggle(Reading r)async{final d=await db;final old=await d.query('saved',where:'id=?',whereArgs:[r.id]);if(old.isNotEmpty){await d.delete('saved',where:'id=?',whereArgs:[r.id]);}else{await d.insert('saved',{'id':r.id,'sign':r.sign,'title':r.title,'body':r.body,'prompt':r.prompt});}}
 Future<void> write(String body,String prompt)async=>(await db).insert('journal',{'id':DateTime.now().microsecondsSinceEpoch.toString(),'day':DateFormat('yyyy-MM-dd').format(DateTime.now()),'body':body,'prompt':prompt});
 Future<void> delete(String id)async=>(await db).delete('journal',where:'id=?',whereArgs:[id]);
 Future<String?> getSetting(String k)async{final r=await(await db).query('settings',where:'key=?',whereArgs:[k]);return r.isEmpty?null:r.first['value'] as String;}
-Future<void> setting(String k,String v)async=>(await db).insert('settings',{'key':k,'value':v},conflictAlgorithm:ConflictAlgorithm.replace);
+Future<void> setting(String k,String v)async{await (await db).insert('settings',{'key':k,'value':v},conflictAlgorithm:ConflictAlgorithm.replace);}
 Future<void> clear()async{final d=await db;await d.delete('saved');await d.delete('journal');await d.delete('settings');await d.update('profile',{'sign':'aries'},where:'id=1');}}
 final savedProvider=FutureProvider((ref)=>LocalDb.instance.saved());
 final journalProvider=FutureProvider((ref)=>LocalDb.instance.journal());
